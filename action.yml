@@ -49,6 +49,7 @@ runs:
         TEMPLATE: ${{ inputs.erb_render_template }}
         TEMPLATE_SAVE_PATH: ${{ inputs.erb_render_save_path }}
       run: |
+          echo "Installing Terratrash gem version: $TERRATRASH_VERSION"
           gem install terratrash -v $TERRATRASH_VERSION
 
           ruby -e "
@@ -57,25 +58,33 @@ runs:
           require 'terratrash'
 
           # Load the Terraform output file into a string
-          tf_output = File.read(ENV.fetch('INPUT_FILE_PATH'))
+          input_file_path = ENV.fetch('INPUT_FILE_PATH')
+          puts 'Reading Terraform output from: ' + input_file_path
+          tf_output = File.read(input_file_path)
 
           # Parse the terraform output with Terratrash
+          puts 'Cleaning Terraform output with terratrash...'
           terratrash = Terratrash.new
           results = terratrash.clean(tf_output)
+          puts 'Results formatted with terratrash'
 
           # If an ERB template is provided, render the results into the template
           erb_template = ENV.fetch('TEMPLATE', '')
           if erb_template != ''
+            puts 'An ERB template was provided, rendering the results into the template...'
             template = ERB.new(File.read(erb_template))
             # render the ERB template with binding on <%= results %> to replace it with the results
             erb_template_rendered = template.result(binding)
 
             # save the results (defaults to overwriting the original template file if TEMPLATE_SAVE_PATH is not provided)
             template_save_path = ENV.fetch('TEMPLATE_SAVE_PATH', erb_template)
+            puts 'Saving the rendered ERB template to: ' + template_save_path
 
             File.open(template_save_path, 'w') { |file| file.write(erb_template_rendered) }
           end
 
           # Write the cleaned Terraform output to a file
-          File.open(ENV.fetch('OUTPUT_FILE_PATH'), 'w') { |file| file.write(results) }
+          output_file_path = ENV.fetch('OUTPUT_FILE_PATH')
+          puts 'Writing the cleaned Terraform output to: ' + output_file_path
+          File.open(output_file_path, 'w') { |file| file.write(results) }
           "
