@@ -34,9 +34,9 @@ This action is a simple wrapper around the [terratrash](https://github.com/Grant
 
 Check out the [`action.yml`](./action.yml) file for the most up-to-date list of inputs that this Action supports.
 
-## branch-deploy usage
+## branch-deploy compatibility
 
-If you are using the [`github/branch-deploy`](https://github.com/github/branch-deploy) Action with Terraform and want some cleaned up Terraform deployment comments, here are some details that you might find useful.
+If you are using the [`github/branch-deploy`](https://github.com/github/branch-deploy) Action with Terraform and want some cleaned up Terraform deployment comments, here are some details that you might find useful:
 
-- Live Example - [code](https://github.com/the-hideout/cloudflare/blob/0e579405af0422e80ae76f3e085001fd528045ec/.github/workflows/branch-deploy.yml#L80-L86) - [template file](https://github.com/the-hideout/cloudflare/blob/0e579405af0422e80ae76f3e085001fd528045ec/.github/deployment_message.md)
-- [docs](https://github.com/github/branch-deploy/blob/1f6516ef5092890ce75d9e97ca7cbdb628e38bdd/docs/custom-deployment-messages.md)
+- Live Example: [related workflow code](https://github.com/the-hideout/cloudflare/blob/0e579405af0422e80ae76f3e085001fd528045ec/.github/workflows/branch-deploy.yml#L60-L94) - [template file for pull request comments](https://github.com/the-hideout/cloudflare/blob/0e579405af0422e80ae76f3e085001fd528045ec/.github/deployment_message.md)
+- [branch deploy custom comment docs](https://github.com/github/branch-deploy/blob/1f6516ef5092890ce75d9e97ca7cbdb628e38bdd/docs/custom-deployment-messages.md)
