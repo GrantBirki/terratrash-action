@@ -65,7 +65,7 @@ runs:
 
           # If an ERB template is provided, render the results into the template
           erb_template = ENV.fetch('TEMPLATE', '')
-          if erb_template != '')
+          if erb_template != ''
             template = ERB.new(File.read(erb_template))
             # render the ERB template with binding on <%= results %> to replace it with the results
             erb_template_rendered = template.result(binding)
@@ -73,7 +73,7 @@ runs:
             # save the results (defaults to overwriting the original template file if TEMPLATE_SAVE_PATH is not provided)
             template_save_path = ENV.fetch('TEMPLATE_SAVE_PATH', erb_template)
 
-            File.open(erb_template, 'w') { |file| file.write(erb_template_rendered) }
+            File.open(template_save_path, 'w') { |file| file.write(erb_template_rendered) }
           end
 
           # Write the cleaned Terraform output to a file
