@@ -1,0 +1,81 @@
+name: "terratrash-action"
+description: "A GitHub Action to run the Terratrash gem for Terraform output cleanup"
+author: "Grant Birkinbine"
+
+inputs:
+  input_file_path:
+    description: The path to a file of Terraform output text to process
+    default: terraform-output.txt
+    required: true
+  output_file_path:
+    description: The path to save the cleaned Terraform output text
+    default: terraform-output-fmt.txt
+    required: true
+  ruby_version:
+    description: The version of Ruby to use
+    default: '3.3'
+    required: true
+  terratrash_version:
+    description: The Gem version of Terratrash to use
+    default: '1.1.1'
+    required: true
+  erb_render_template:
+    description: The path to the ERB template to render the results into
+    default: ''
+    required: false
+  erb_render_save_path:
+    description: The path to save the rendered ERB template to (if erb_render_template is provided)
+    default: ''
+    required: false
+
+branding:
+  icon: "trash"
+  color: "purple"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@52b8784594ec115fd17094752708121dc5dabb47 # pin@v1.154.0
+      with:
+        ruby-version: ${{ inputs.ruby_version }}
+
+    - name: terratrash
+      shell: bash
+      env:
+        INPUT_FILE_PATH: ${{ inputs.input_file_path }}
+        OUTPUT_FILE_PATH: ${{ inputs.output_file_path }}
+        TERRATRASH_VERSION: ${{ inputs.terratrash_version }}
+        TEMPLATE: ${{ inputs.erb_render_template }}
+        TEMPLATE_SAVE_PATH: ${{ inputs.erb_render_save_path }}
+      run: |
+          gem install terratrash -v $TERRATRASH_VERSION
+
+          ruby -e "
+          # frozen_string_literal: true
+          require 'erb'
+          require 'terratrash'
+
+          # Load the Terraform output file into a string
+          tf_output = File.read(ENV.fetch('INPUT_FILE_PATH'))
+
+          # Parse the terraform output with Terratrash
+          terratrash = Terratrash.new
+          results = terratrash.clean(tf_output)
+
+          # If an ERB template is provided, render the results into the template
+          erb_template = ENV.fetch('TEMPLATE', '')
+          if erb_template != '')
+            template = ERB.new(File.read(erb_template))
+            # render the ERB template with binding on <%= results %> to replace it with the results
+            erb_template_rendered = template.result(binding)
+
+            # save the results (defaults to overwriting the original template file if TEMPLATE_SAVE_PATH is not provided)
+            template_save_path = ENV.fetch('TEMPLATE_SAVE_PATH', erb_template)
+
+            File.open(erb_template, 'w') { |file| file.write(erb_template_rendered) }
+          end
+
+          # Write the cleaned Terraform output to a file
+          File.open(ENV.fetch('OUTPUT_FILE_PATH'), 'w') { |file| file.write(results) }
+          "
