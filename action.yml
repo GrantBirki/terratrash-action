@@ -17,7 +17,7 @@ inputs:
     required: true
   terratrash_version:
     description: The Gem version of Terratrash to use
-    default: '1.1.1'
+    default: '1.2.2'
     required: true
   erb_render_template:
     description: The path to the ERB template to render the results into
