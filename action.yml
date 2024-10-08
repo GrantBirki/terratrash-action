@@ -13,11 +13,11 @@ inputs:
     required: true
   ruby_version:
     description: The version of Ruby to use
-    default: '3.3'
+    default: '3.3.5'
     required: true
   terratrash_version:
     description: The Gem version of Terratrash to use
-    default: '1.1.1'
+    default: '1.2.2'
     required: true
   erb_render_template:
     description: The path to the ERB template to render the results into
@@ -36,7 +36,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup Ruby
-      uses: ruby/setup-ruby@52b8784594ec115fd17094752708121dc5dabb47 # pin@v1.154.0
+      uses: ruby/setup-ruby@f26937343756480a8cb3ae1f623b9c8d89ed6984 # pin@v1.196.0
       with:
         ruby-version: ${{ inputs.ruby_version }}
 
